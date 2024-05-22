@@ -22,6 +22,10 @@ app.use(cors(corsOptions))
 connectDb()
 
 const port = process.env.PORT;
-
 app.get('/', (req, res) => res.send('Hello World!'))
+
+// Routers
+app.use('/api/user', require('./routes/userRoutes'))
+
+
 app.listen(port, () => console.log(`Sajilo Sales listening on port ${port}!`))

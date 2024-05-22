@@ -1,4 +1,4 @@
-const userModel = require('../models/userModels')
+const userModel = require('../models/userModel')
 const bcrypt = require('bcrypt')
 
 const jwt = require('jsonwebtoken')
@@ -8,8 +8,9 @@ const jwt = require('jsonwebtoken')
 const createUser = async (req, res) => {
     console.log(req.body)
     // destructuring
-    const { firstName, lastName, email, password } = req.body;
-    if (!firstName || !lastName || !email || !password) {
+    const { firstName,   lastName, address, email, password } = req.body;
+    if (!firstName || !lastName || !address || !email || !password) {
+        console.log(firstName, lastName, address, email, password)
         return res.json({
             "sucess": false,
             'message': "please enter all fields!"
@@ -32,6 +33,7 @@ const createUser = async (req, res) => {
         const newUser = new userModel({
             firstName: firstName,
             lastName: lastName,
+            address: address,
             email: email,
             password: hashPassword
         }
