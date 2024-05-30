@@ -22,7 +22,7 @@ app.use(cors(corsOptions))
 connectDb()
 
 const port = process.env.PORT;
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.send({ "message": 'Hello World!' }))
 
 // Routers
 app.use('/api/user', require('./routes/userRoutes'))

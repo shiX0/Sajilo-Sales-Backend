@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 const createUser = async (req, res) => {
     console.log(req.body)
     // destructuring
-    const { firstName,   lastName, address, email, password } = req.body;
+    const { firstName, lastName, address, email, password } = req.body;
     if (!firstName || !lastName || !address || !email || !password) {
         console.log(firstName, lastName, address, email, password)
         return res.json({
@@ -60,7 +60,7 @@ const createUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    // res.send("LOgin APi iis working")
+    // res.send("Login APi iis working")
     console.log(req.body)
     // Destructuting
     const { email, password } = req.body
