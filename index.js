@@ -1,6 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv')
-// const multipart = require('connect-multiparty')
+const multipart = require('connect-multiparty')
 const connectDb = require('./database/connectDb')
 const cors = require('cors')
 const path = require('path')
@@ -11,10 +11,10 @@ const app = express()
 dotenv.config()
 
 app.use(express.json())
-// app.use(multipart())
+app.use(multipart())
 
 
-// app.use(express.static("./public"))
+app.use(express.static("./public"))
 app.use(express.static(path.join(__dirname, "public")));
 
 // cors config
