@@ -9,6 +9,9 @@ router.post('/create', upload('/products').single('productImage'), productContro
 // Get all products
 router.get('/products', productController.getAllProducts);
 
+
+router.get('/pagination', productController.productPagiantion);
+
 // Get a single product by ID
 router.get('/product/:id', productController.getProductById);
 

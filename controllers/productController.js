@@ -102,3 +102,42 @@ exports.deleteProductById = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.productPagiantion = async (req, res) => {
+    // page no (received from user)
+    const pageNo = parseInt(req.query.page) || 1;
+    // limit(results per page)
+    const resultPerPage = parseInt(req.query.limit) || 10;
+
+    console.log(`Page: ${pageNo}, Results per page: ${resultPerPage}`);
+
+    try {
+        const products = await productModel.find({})
+            .skip((pageNo - 1) * resultPerPage)
+            .limit(resultPerPage)
+            .lean();
+        //  there is no product
+        if (products.length === 0) {
+            return res.status(400).json({
+                'success': false,
+                'message': "No Product Found!"
+            })
+        }
+        res.status(201).json({
+            'success': true,
+            'message': "Product Fetched!",
+            'products': products
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            'success': false,
+            'message': "Server Error"
+        })
+
+    }
+
+}
+
+
