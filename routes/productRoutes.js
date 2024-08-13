@@ -1,27 +1,21 @@
 const router = require('express').Router();
 const productController = require('../controllers/productController');
+const authMiddleware = require('../middleware/authMiddleware');
 const { upload } = require('../utils/fileupload');
 
-
 // Create a new product
-router.post('/create', upload('/products').single('productImage'), productController.createProduct);
+router.post('/create', authMiddleware, upload('/products').single('productImage'), productController.createProduct);
 
-// Get all products
-router.get('/products', productController.getAllProducts);
-
-
-router.get('/pagination', productController.productPagiantion);
+// Get all products (with optional pagination)
+router.get('/', authMiddleware, productController.productPagination);
 
 // Get a single product by ID
-router.get('/product/:id', productController.getProductById);
+router.get('/:id', authMiddleware, productController.getProductById);
 
 // Update a product by ID
-router.put('/update/:id', upload('/products').single('productImage'), productController.updateProductById);
+router.put('/:id', authMiddleware, upload('/products').single('productImage'), productController.updateProductById);
 
 // Delete a product by ID
-router.delete('/delete/:id', productController.deleteProductById);
-
-
-
+router.delete('/:id', authMiddleware, productController.deleteProductById);
 
 module.exports = router;

@@ -1,7 +1,9 @@
 const productModel = require("../models/productModel");
 const { deleteFile } = require("../utils/fileupload");
+
 // Create a new product
 exports.createProduct = async (req, res) => {
+    console.log("user id:=" + req.user);
     try {
         // Handle file upload
         if (!req.file) {
@@ -13,14 +15,16 @@ exports.createProduct = async (req, res) => {
         const productData = {
             ...req.body,
             imageUrl: `products/${req.file.filename}`,
+            user: req.user._id
         };
-        console.log(productData)
+        // console.log(productData)
 
         // Convert tags from a comma-separated string to an array, if necessary
         if (typeof productData.tags === "string") {
             productData.tags = productData.tags.split(",").map((tag) => tag.trim());
         }
         const newProduct = new productModel(productData);
+        console.log(newProduct)
         await newProduct.save();
         res.status(201).json(newProduct);
     } catch (err) {
@@ -39,12 +43,12 @@ exports.getAllProducts = async (req, res) => {
     }
 };
 
-// Get a single product by ID
+// Get a single product by ID (only if created by the requesting user)
 exports.getProductById = async (req, res) => {
     try {
-        const product = await productModel.findById(req.params.id);
+        const product = await productModel.findOne({ _id: req.params.id, user: req.user._id });
         if (!product) {
-            return res.status(404).json({ error: "Product not found" });
+            return res.status(404).json({ error: "Product not found or you don't have permission to view it" });
         }
         res.json(product);
     } catch (err) {
@@ -52,49 +56,42 @@ exports.getProductById = async (req, res) => {
     }
 };
 
-// Update a product
+// Update a product (only if created by the requesting user)
 exports.updateProductById = async (req, res) => {
     try {
         const productId = req.params.id;
-        console.log(productId)
-        const product = await productModel.findById(productId);
-
+        const product = await productModel.findOne({ _id: productId, user: req.user._id });
         if (!product) {
-            return res.status(404).json({ error: "Product not found" });
+            return res.status(404).json({ error: "Product not found or you don't have permission to update it" });
         }
 
-        // Check if a new file is uploaded
         if (req.file) {
-            // Delete the old file
             if (product.imageUrl) {
                 deleteFile(product.imageUrl);
             }
-            console.log(`file=${req.file.filename}`)
-            // Update with new image URL
+            console.log(`file=${req.file.filename}`);
             req.body.imageUrl = `products/${req.file.filename}`;
         } else {
-            // If no new file is uploaded, remove imageUrl from req.body to prevent overwriting
             delete req.body.imageUrl;
         }
-        // Update the product
+
         const updatedProduct = await productModel.findByIdAndUpdate(
             productId,
             req.body,
             { new: true }
         );
-
         res.json(updatedProduct);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 };
 
-// Delete a product by ID
+// Delete a product by ID (only if created by the requesting user)
 exports.deleteProductById = async (req, res) => {
     try {
-        const deletedProduct = await productModel.findByIdAndDelete(req.params.id);
+        const deletedProduct = await productModel.findOneAndDelete({ _id: req.params.id, user: req.user._id });
         if (!deletedProduct) {
-            return res.status(404).json({ error: "Product not found" });
+            return res.status(404).json({ error: "Product not found or you don't have permission to delete it" });
         }
         deleteFile(deletedProduct.imageUrl);
         res.json({ message: "Product deleted successfully" });
@@ -103,41 +100,35 @@ exports.deleteProductById = async (req, res) => {
     }
 };
 
-exports.productPagiantion = async (req, res) => {
-    // page no (received from user)
+// Product pagination (only for products created by the requesting user)
+exports.productPagination = async (req, res) => {
     const pageNo = parseInt(req.query.page) || 1;
-    // limit(results per page)
     const resultPerPage = parseInt(req.query.limit) || 10;
-
     console.log(`Page: ${pageNo}, Results per page: ${resultPerPage}`);
 
     try {
-        const products = await productModel.find({})
+        const products = await productModel.find({ user: req.user._id })
             .skip((pageNo - 1) * resultPerPage)
             .limit(resultPerPage)
             .lean();
-        //  there is no product
+
         if (products.length === 0) {
             return res.status(400).json({
                 'success': false,
-                'message': "No Product Found!"
-            })
+                'message': "No Products Found!"
+            });
         }
-        res.status(201).json({
-            'success': true,
-            'message': "Product Fetched!",
-            'products': products
-        })
 
+        res.status(200).json({
+            'success': true,
+            'message': "Products Fetched!",
+            'products': products
+        });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).json({
             'success': false,
             'message': "Server Error"
-        })
-
+        });
     }
-
-}
-
-
+};

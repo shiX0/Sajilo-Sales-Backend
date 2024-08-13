@@ -81,8 +81,9 @@ const loginUser = async (req, res) => {
                 message: "Invalid Crediantials!",
             });
         }
+        // console.log(user)
         // generating JWT token
-        const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         res.json({
             sucess: true,

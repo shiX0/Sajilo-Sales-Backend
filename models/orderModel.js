@@ -16,24 +16,24 @@ const orderSchema = new mongoose.Schema({
             type: Number,
             required: true
         },
-        price: {
-            type: Number,
-            required: true
-        }
     }],
     total: {
         type: Number,
         required: true
     },
+    tax: {
+        type: Number,
+        required: false
+    },
+
+    discount: {
+        type: Number,
+        required: false
+    },
     paymentMethod: {
         type: String,
         enum: ['Cash', 'Credit Card', 'Debit Card', 'Mobile Payment'],
         required: true
-    },
-    status: {
-        type: String,
-        enum: ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Canceled'],
-        default: 'Pending'
     },
     createdAt: {
         type: Date,
@@ -42,7 +42,12 @@ const orderSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 });
 
 const Order = mongoose.model('Order', orderSchema);

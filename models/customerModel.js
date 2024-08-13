@@ -10,26 +10,12 @@ const customerSchema = new mongoose.Schema({
         unique: true
     },
     phone: {
-        type: String
+        type: String,
+        required: true
     },
     address: {
-        city: String,
-        country: String
+        type: String,
     },
-    purchaseHistory: [{
-        order: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Order'
-        },
-        date: {
-            type: Date,
-            default: Date.now
-        },
-        total: {
-            type: Number,
-            required: true
-        }
-    }],
     createdAt: {
         type: Date,
         default: Date.now
@@ -37,7 +23,12 @@ const customerSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
