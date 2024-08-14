@@ -26,7 +26,7 @@ app.use(cors(corsOptions))
 // DAtabase connection
 connectDb()
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5050;
 app.get('/', (req, res) => res.send({ "message": 'Hello World!' }))
 
 // Routers
@@ -38,3 +38,6 @@ app.use('/api/metrics', require('./routes/metricsRoutes'))
 
 
 app.listen(port, () => console.log(`Sajilo Sales listening on port ${port}!`))
+
+
+module.exports = app;
