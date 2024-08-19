@@ -1,7 +1,7 @@
 const Customer = require("../models/customerModel");
 const Order = require("../models/orderModel");
 
-const metricsController = {
+const MetricsController = {
     getMetrics: async (req, res) => {
         try {
             // Calculate total revenue
@@ -84,4 +84,4 @@ const metricsController = {
     },
 };
 
-module.exports = metricsController;
+module.exports = MetricsController;

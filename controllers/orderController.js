@@ -34,6 +34,34 @@ exports.getAllOrders = async (req, res) => {
         res.status(500).json({ message: 'Error fetching orders', error: error.message });
     }
 };
+exports.getAllOrdersMobile = async (req, res) => {
+    const pageNo = parseInt(req.query.page) || 1;
+    const resultPerPage = parseInt(req.query.limit) || 10;
+
+    if (pageNo < 1 || resultPerPage < 1) {
+        return res.status(400).json({ message: 'Invalid page or limit number' });
+    }
+
+    try {
+        const orders = await Order.find({ user: req.user._id })
+            .skip((pageNo - 1) * resultPerPage)
+            .limit(resultPerPage)
+            .lean();
+
+        const totalOrders = await Order.countDocuments({ user: req.user._id });
+        const totalPages = Math.ceil(totalOrders / resultPerPage);
+
+        res.status(200).json({
+            orders,
+            totalOrders,
+            totalPages,
+            currentPage: pageNo,
+            perPage: resultPerPage
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching orders', error: error.message });
+    }
+};
 
 
 // Get a single order by ID
@@ -107,7 +135,9 @@ exports.deleteOrder = async (req, res) => {
 exports.getSalesAnalytics = async (req, res) => {
     try {
         const salesData = await Order.aggregate([
+            { $match: { user: req.user._id } },
             {
+
                 $group: {
                     _id: null,
                     totalSales: { $sum: "$total" },

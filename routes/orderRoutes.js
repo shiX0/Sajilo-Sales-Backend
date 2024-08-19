@@ -5,6 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 // Get all orders
 router.get('/', authMiddleware, orderController.getAllOrders);
+router.get('/mobile/', authMiddleware, orderController.getAllOrdersMobile);
 // analytics
 router.get('/analytics', authMiddleware, orderController.getSalesAnalytics);
 // Get a single order by ID
